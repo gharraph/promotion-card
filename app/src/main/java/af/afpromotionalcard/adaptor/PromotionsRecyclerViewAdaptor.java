@@ -11,17 +11,15 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import java.util.List;
-
 import af.afpromotionalcard.R;
-import af.afpromotionalcard.activity.PromotionCardActiviy;
-import af.afpromotionalcard.entity.PromotionCards;
+import af.afpromotionalcard.activity.PromotionCardActivity;
+import af.afpromotionalcard.entity.PromotionCard;
 
 public class PromotionsRecyclerViewAdaptor extends RecyclerView.Adapter<PromotionsRecyclerViewAdaptor.PromotionViewHolder> {
-    List<PromotionCards> promotions;
+    PromotionCard[] promotions;
     Context context;
 
-    public PromotionsRecyclerViewAdaptor(Context context, List<PromotionCards> promotions) {
+    public PromotionsRecyclerViewAdaptor(Context context, PromotionCard[] promotions) {
         this.promotions = promotions;
         this.context = context;
     }
@@ -34,13 +32,13 @@ public class PromotionsRecyclerViewAdaptor extends RecyclerView.Adapter<Promotio
 
     @Override
     public void onBindViewHolder(PromotionsRecyclerViewAdaptor.PromotionViewHolder holder, int position) {
-        holder.title.setText(promotions.get(position).getTitle());
-        Picasso.with(context).load(promotions.get(position).getImage()).resize(120, 60).into(holder.image);
+        holder.title.setText(promotions[position].getTitle());
+        Picasso.with(context).load(promotions[position].getImage()).fit().placeholder(R.drawable.ic_place_holder).into(holder.image);
     }
 
     @Override
     public int getItemCount() {
-        return promotions.size();
+        return promotions.length;
     }
 
     public static class PromotionViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -57,7 +55,8 @@ public class PromotionsRecyclerViewAdaptor extends RecyclerView.Adapter<Promotio
 
         @Override
         public void onClick(View v) {
-            Intent promotionCardIntent = new Intent(v.getContext(), PromotionCardActiviy.class);
+            Intent promotionCardIntent = new Intent(v.getContext(), PromotionCardActivity.class);
+            promotionCardIntent.putExtra("position", getAdapterPosition());
             v.getContext().startActivity(promotionCardIntent);
         }
     }

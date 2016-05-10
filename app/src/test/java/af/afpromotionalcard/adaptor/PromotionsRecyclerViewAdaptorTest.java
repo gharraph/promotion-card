@@ -17,21 +17,15 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowApplication;
 import org.robolectric.util.ActivityController;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import af.afpromotionalcard.BuildConfig;
 import af.afpromotionalcard.R;
-import af.afpromotionalcard.activity.PromotionCardActiviy;
+import af.afpromotionalcard.activity.PromotionCardActivity;
 import af.afpromotionalcard.activity.PromotionsActivity;
-import af.afpromotionalcard.entity.PromotionCards;
+import af.afpromotionalcard.entity.PromotionCard;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.isNotNull;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = Build.VERSION_CODES.JELLY_BEAN)
@@ -41,7 +35,7 @@ public class PromotionsRecyclerViewAdaptorTest {
     private ActivityController controller;
     private Activity activity;
     private PromotionsRecyclerViewAdaptor adaptor;
-    private List<PromotionCards> promotions;
+    private PromotionCard[] promotions;
 
     @Before
     public void setUp() {
@@ -50,26 +44,7 @@ public class PromotionsRecyclerViewAdaptorTest {
         controller.create();
         promotionRecyclerView = (ViewGroup) LayoutInflater.from(activity).inflate(R.layout.promotion_card_view, null);
 
-        PromotionCards.Button button1 = new PromotionCards.Button();
-        button1.setTarget("target-1");
-        button1.setTitle("title-1");
-        PromotionCards card1 = new PromotionCards();
-        card1.setButton(button1);
-        card1.setTitle("promotion-title-1");
-        card1.setDescription("description-1");
-        card1.setFooter("footer-1");
-        card1.setImage("image-1");
-
-        PromotionCards.Button button2 = new PromotionCards.Button();
-        button2.setTitle("title-2");
-        button2.setTarget("target-2");
-        PromotionCards card2 = new PromotionCards();
-        card2.setButton(button2);
-        card2.setTitle("promotion-title-2");
-        card2.setDescription("description-2");
-        card2.setFooter("footer-2");
-        card2.setImage("image-2");
-        promotions = new ArrayList<>(Arrays.asList(card1, card2));
+        buildPromotionsArray();
 
         adaptor = new PromotionsRecyclerViewAdaptor(activity.getApplicationContext(), promotions);
     }
@@ -86,8 +61,31 @@ public class PromotionsRecyclerViewAdaptorTest {
 
     @Test
     public void onGetItemCountPromotionsJsonObjectSizeGetReturned() {
-        assertThat(adaptor.getItemCount(), is(promotions.size()));
+        assertThat(adaptor.getItemCount(), is(promotions.length));
 
+    }
+
+    private void buildPromotionsArray() {
+        PromotionCard.Button button1 = new PromotionCard.Button();
+        button1.setTarget("target-1");
+        button1.setTitle("title-1");
+        PromotionCard card1 = new PromotionCard();
+        card1.setButton(button1);
+        card1.setTitle("promotion-title-1");
+        card1.setDescription("description-1");
+        card1.setFooter("footer-1");
+        card1.setImage("image-1");
+
+        PromotionCard.Button button2 = new PromotionCard.Button();
+        button2.setTitle("title-2");
+        button2.setTarget("target-2");
+        PromotionCard card2 = new PromotionCard();
+        card2.setButton(button2);
+        card2.setTitle("promotion-title-2");
+        card2.setDescription("description-2");
+        card2.setFooter("footer-2");
+        card2.setImage("image-2");
+        promotions = new PromotionCard[] { card1, card2 };
     }
 
     @Test
@@ -98,7 +96,18 @@ public class PromotionsRecyclerViewAdaptorTest {
 
         ShadowApplication shadowContext = Shadows.shadowOf(RuntimeEnvironment.application);
         Intent intent = shadowContext.getNextStartedActivity();
-        assertThat(intent.getComponent().getClassName(), is(PromotionCardActiviy.class.getName()));
+        assertThat(intent.getComponent().getClassName(), is(PromotionCardActivity.class.getName()));
+    }
+
+    @Test
+    public void onClickOfPromotionViewHolderPassesThePositionClickedToPromotionCardActivity() {
+        PromotionsRecyclerViewAdaptor.PromotionViewHolder holder = new PromotionsRecyclerViewAdaptor.PromotionViewHolder(promotionRecyclerView);
+
+        holder.onClick(promotionRecyclerView);
+
+        ShadowApplication shadowContext = Shadows.shadowOf(RuntimeEnvironment.application);
+        Intent intent = shadowContext.getNextStartedActivity();
+        assertThat((int) intent.getExtras().get("position"), is(holder.getAdapterPosition()));
     }
 
 }

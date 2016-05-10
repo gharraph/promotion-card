@@ -1,9 +1,9 @@
 package af.afpromotionalcard.entity;
 
 public class JSONResponse {
-    private PromotionCards[] promotions;
+    private PromotionCard[] promotions;
 
-    public PromotionCards[] getPromotions() {
+    public PromotionCard[] getPromotions() {
         return promotions;
     }
 }

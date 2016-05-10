@@ -2,7 +2,7 @@ package af.afpromotionalcard.entity;
 
 import java.util.List;
 
-public class PromotionCards {
+public class PromotionCard {
     Button button;
     String description;
     String footer;
